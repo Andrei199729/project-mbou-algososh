@@ -1,0 +1,22 @@
+.form {
+  display: flex;
+  justify-content: center;
+}
+
+.box {
+  display: flex;
+  gap: 12px;
+  margin-right: 80px;
+}
+
+.inputSize {
+  width: 377px;
+}
+
+.stack {
+  margin: 78px 0 0;
+  display: flex;
+  gap: 78px 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}

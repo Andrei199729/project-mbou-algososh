@@ -1,0 +1,41 @@
+.position {
+  position: relative;
+}
+
+.sorting {
+  margin: auto;
+  width: 924px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radioInputs {
+  display: flex;
+  gap: 40px;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.columns {
+  position: absolute;
+  bottom: 133px;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, 0);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+}
+
+.buttonAscending {
+  width: 205px;
+}
+
+.buttonDescending {
+  width: 186px;
+}
