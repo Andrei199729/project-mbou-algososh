@@ -7,6 +7,7 @@ import styles from "./sorting-page.module.css";
 import { Column } from "../ui/column/column";
 import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
+import { DELAY_IN_MS } from "../../constants/delays";
 
 type TArraySort = {
   value: number;
@@ -46,7 +47,7 @@ export const SortingPage: React.FC = () => {
         arr[i].color = ElementStates.Changing;
         arr[j].color = ElementStates.Changing;
         setArrayRandom([...arr]);
-        await setTime(1000);
+        await setTime(DELAY_IN_MS);
         if (arr[indexMin].value > arr[j].value) {
           indexMin = j;
         }
@@ -70,7 +71,7 @@ export const SortingPage: React.FC = () => {
         arr[i].color = ElementStates.Changing;
         arr[j].color = ElementStates.Changing;
         setArrayRandom([...arr]);
-        await setTime(1000);
+        await setTime(DELAY_IN_MS);
         if (arr[indexMin].value < arr[j].value) {
           indexMin = j;
         }
@@ -92,7 +93,7 @@ export const SortingPage: React.FC = () => {
         arr[j].color = ElementStates.Changing;
         arr[j + 1].color = ElementStates.Changing;
         setArrayRandom([...arr]);
-        await setTime(1000);
+        await setTime(DELAY_IN_MS);
         if (arr[j].value > arr[j + 1].value) {
           let tmp = arr[j].value;
           arr[j].value = arr[j + 1].value;
@@ -115,7 +116,7 @@ export const SortingPage: React.FC = () => {
         arr[j].color = ElementStates.Changing;
         arr[j + 1].color = ElementStates.Changing;
         setArrayRandom([...arr]);
-        await setTime(1000);
+        await setTime(DELAY_IN_MS);
         if (arr[j].value < arr[j + 1].value) {
           let tmp = arr[j].value;
           arr[j].value = arr[j + 1].value;

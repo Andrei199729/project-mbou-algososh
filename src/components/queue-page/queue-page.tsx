@@ -7,6 +7,8 @@ import styles from "./queue-page.module.css";
 import { Queue } from "./queue-page-class";
 import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { HEAD, TAIL } from "../../constants/element-captions";
 
 type TQueue = {
   value?: string;
@@ -37,7 +39,7 @@ export const QueuePage: React.FC = () => {
       queue.enqueue({ value: valueQueue, color: ElementStates.Default });
       arrayQueue[queue.tail - 1] = { value: "", color: ElementStates.Changing };
       setArrayQueue([...arrayQueue]);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       arrayQueue[queue.tail - 1] = {
         value: valueQueue,
         color: ElementStates.Changing,
@@ -66,7 +68,6 @@ export const QueuePage: React.FC = () => {
     };
 
     setArrayQueue([...arrayQueue]);
-    console.log(arrayQueue);
 
     arrayQueue[queue.head - 1] = {
       value: "",
@@ -74,31 +75,28 @@ export const QueuePage: React.FC = () => {
     };
 
     setArrayQueue([...arrayQueue]);
-    console.log(arrayQueue);
 
     if (queue.tail === 7 && queue.head === 7 && queue.isEmpty()) {
       arrayQueue[queue.head - 1] = {
         value: "",
         color: ElementStates.Default,
-        head: "head",
+        head: HEAD,
       };
       setArrayQueue([...arrayQueue]);
-      console.log(arrayQueue);
     }
-    await setTime(500);
+    await setTime(SHORT_DELAY_IN_MS);
     if (queue.length >= queue.size) {
       setDisabled(true);
     } else {
       setDisabled(false);
     }
     setLoaderDequeue(false);
-    console.log(arrayQueue);
   }
 
   async function onSubmitReset(e: FormEvent<HTMLFormElement>) {
     setLoaderReset(true);
     e.preventDefault();
-    await setTime(500);
+    await setTime(SHORT_DELAY_IN_MS);
     queue.reset();
     setArrayQueue(queueArray);
     setLoaderReset(false);
@@ -147,12 +145,10 @@ export const QueuePage: React.FC = () => {
               index={index}
               head={
                 (index === queue.head && !queue.isEmpty()) || item.head
-                  ? "head"
+                  ? HEAD
                   : null
               }
-              tail={
-                index === queue.tail - 1 && !queue.isEmpty() ? "tail" : null
-              }
+              tail={index === queue.tail - 1 && !queue.isEmpty() ? TAIL : null}
               state={item.color}
             />
           );

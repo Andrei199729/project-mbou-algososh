@@ -32,10 +32,6 @@ export class Queue<T> implements IQueue<T> {
       this.head++;
       this.length--;
     }
-    console.log(this.length);
-    console.log(this.size);
-    console.log(this.container);
-    console.log(this.head);
   };
 
   reset = () => {

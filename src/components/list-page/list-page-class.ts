@@ -15,7 +15,7 @@ interface ILinkedList<T> {
   deleteHead: () => void;
   deleteTail: () => void;
   delete: (value: T) => void;
-  insertAfter: (value: T, prevNode: any) => void;
+  insertAfter: (value: T, prevNode: LinkedListNode<T>) => void;
   insertAt: (value: T, index: number) => void;
   deleteAt: (index: number) => void;
   getArray: () => T[];
@@ -114,7 +114,7 @@ export class LinkedList<T> implements ILinkedList<T> {
     this.size--;
   }
 
-  insertAfter(value: T, prevNode: any) {
+  insertAfter(value: T, prevNode: LinkedListNode<T>) {
     if (prevNode === null) {
       return this;
     }

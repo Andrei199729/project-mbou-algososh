@@ -7,6 +7,7 @@ import { Circle } from "../ui/circle/circle";
 import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
 import { Stack } from "./stack-page-class";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 type TStack = {
   value: string;
@@ -28,7 +29,7 @@ export const StackPage: React.FC = () => {
       stack.push({ value: valueStack, color: ElementStates.Changing });
       setArrayStack([...stack.getElements()]);
     }
-    await setTime(500);
+    await setTime(SHORT_DELAY_IN_MS);
     stack.getElements()[stack.getSize() - 1].color = ElementStates.Default;
     setValueStack("");
     setLoaderPush(false);
@@ -38,7 +39,7 @@ export const StackPage: React.FC = () => {
     setLoaderPop(true);
     stack.getElements()[stack.getSize() - 1].color = ElementStates.Changing;
     setArrayStack([...stack.getElements()]);
-    await setTime(500);
+    await setTime(SHORT_DELAY_IN_MS);
     stack.pop();
     setArrayStack([...stack.getElements()]);
     setLoaderPop(false);
@@ -47,7 +48,7 @@ export const StackPage: React.FC = () => {
   async function onSubmitReset(e: FormEvent<HTMLFormElement>) {
     setLoaderReset(true);
     e.preventDefault();
-    await setTime(500);
+    await setTime(SHORT_DELAY_IN_MS);
     stack.reset();
     setArrayStack([...stack.getElements()]);
     setLoaderReset(false);

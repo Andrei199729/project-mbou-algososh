@@ -6,6 +6,7 @@ import styles from "./string.module.css";
 import { Circle } from "../ui/circle/circle";
 import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
+import { DELAY_IN_MS } from "../../constants/delays";
 
 type TString = {
   colorElementStates: ElementStates;
@@ -29,6 +30,7 @@ export const StringComponent: React.FC = () => {
     let stringArray = stringValue.split("").map((letter) => {
       return { colorElementStates: ElementStates.Default, value: letter };
     });
+
     reverseString(stringArray);
   }
 
@@ -40,7 +42,7 @@ export const StringComponent: React.FC = () => {
         str[i].colorElementStates = ElementStates.Changing;
         str[b].colorElementStates = ElementStates.Changing;
         setStringValueArray([...str]);
-        await setTime(1000);
+        await setTime(DELAY_IN_MS);
       }
       swap(str, i, b);
       str[i].colorElementStates = ElementStates.Modified;
@@ -67,6 +69,7 @@ export const StringComponent: React.FC = () => {
           text="Развернуть"
           extraClass={styles.buttonString}
           isLoader={loader}
+          disabled={stringValue === ""}
         />
       </form>
       <div className={styles.box}>

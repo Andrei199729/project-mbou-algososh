@@ -5,6 +5,7 @@ import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
 import styles from "./fibonacci-page.module.css";
 import { setTime } from "../../utils/setTime";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 export const FibonacciPage: React.FC = () => {
   const [fibonacciValue, setFibonacciValue] = useState<string>("");
@@ -18,7 +19,7 @@ export const FibonacciPage: React.FC = () => {
     e.preventDefault();
     const arr = fibonacci(Number(fibonacciValue));
     for (let i = 0; i < arr.length; i++) {
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       setFibonacciValueNumberArray(arr.slice(0, i + 1));
     }
     setLoader(false);
@@ -44,10 +45,15 @@ export const FibonacciPage: React.FC = () => {
           isLimitText={true}
           value={fibonacciValue}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setFibonacciValue(e.target.value)
+            e.target.value.length <= 19 && setFibonacciValue(e.target.value)
           }
         />
-        <Button type="submit" text="Развернуть" isLoader={loader} />
+        <Button
+          type="submit"
+          text="Развернуть"
+          isLoader={loader}
+          disabled={fibonacciValue === ""}
+        />
       </form>
       <div
         className={`${styles.box} ${

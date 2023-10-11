@@ -8,6 +8,8 @@ import { Circle } from "../ui/circle/circle";
 import { ArrowIcon } from "../ui/icons/arrow-icon";
 import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { HEAD, TAIL } from "../../constants/element-captions";
 
 const list = new LinkedList<string>(["0", "34", "8", "1"]);
 
@@ -49,13 +51,13 @@ export const ListPage: React.FC = () => {
       setLoading({ ...loading, loadingAddHead: true });
       setvalueInd(0);
       setAddToHeadShow(true);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       list.prepend(valueMeaning);
       setAddToHeadShow(false);
       const newArr = list.getColorArray();
       newArr[0].color = ElementStates.Modified;
       setArrList(newArr);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       newArr[0].color = ElementStates.Default;
       setArrList(newArr);
     }
@@ -68,13 +70,13 @@ export const ListPage: React.FC = () => {
       setLoading({ ...loading, loadingAddTail: true });
       setvalueInd(list.getSize - 1);
       setAddToTailShow(true);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       list.append(valueMeaning);
       setAddToTailShow(false);
       const newArr = list.getColorArray();
       newArr[newArr.length - 1].color = ElementStates.Modified;
       setArrList(newArr);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       newArr[newArr.length - 1].color = ElementStates.Default;
       setArrList(newArr);
     }
@@ -91,7 +93,7 @@ export const ListPage: React.FC = () => {
       setvalueInd(0);
       newArr[0].value = "";
       setArrList(newArr);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       list.deleteHead();
       setDeleteFromTheHeadShow(false);
       setArrList(list.getColorArray());
@@ -108,7 +110,7 @@ export const ListPage: React.FC = () => {
       setvalueInd(newArr.length - 1);
       newArr[newArr.length - 1].value = "";
       setArrList(newArr);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       list.deleteTail();
       setDeleteFromTheTailShow(false);
       setArrList(list.getColorArray());
@@ -124,7 +126,7 @@ export const ListPage: React.FC = () => {
       const newArr = list.getColorArray();
       for (let i = 0; i <= ind; i++) {
         setvalueInd(i);
-        await setTime(500);
+        await setTime(SHORT_DELAY_IN_MS);
         if (i < ind) {
           newArr[i].color = ElementStates.Changing;
           setArrList(newArr);
@@ -136,7 +138,7 @@ export const ListPage: React.FC = () => {
       const finalArr = list.getColorArray();
       finalArr[ind].color = ElementStates.Modified;
       setArrList(finalArr);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       finalArr[ind].color = ElementStates.Default;
       setArrList(finalArr);
     }
@@ -151,17 +153,17 @@ export const ListPage: React.FC = () => {
       setLoading({ ...loading, loadingDeleteIndex: true });
       const newArr = list.getColorArray();
       for (let i = 0; i <= ind; i++) {
-        await setTime(500);
+        await setTime(SHORT_DELAY_IN_MS);
         newArr[i].color = ElementStates.Changing;
         setArrList([...newArr]);
       }
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       setCircleValue(newArr[ind].value);
       newArr[ind].value = "";
       setDeleteByIndexShow(true);
       newArr[ind].color = ElementStates.Default;
       setvalueInd(ind);
-      await setTime(500);
+      await setTime(SHORT_DELAY_IN_MS);
       list.deleteAt(ind);
       setArrList(list.getColorArray());
       setDeleteByIndexShow(false);
@@ -172,9 +174,9 @@ export const ListPage: React.FC = () => {
 
   const showHead = (index: number) => {
     if (index === 0 && !addToHeadShow && !addByIndexShow) {
-      return "head";
+      return HEAD;
     } else if (index === 0 && addByIndexShow && valueInd !== 0) {
-      return "head";
+      return HEAD;
     } else {
       return "";
     }
@@ -186,7 +188,7 @@ export const ListPage: React.FC = () => {
       !deleteFromTheTailShow &&
       !deleteByIndexShow
     ) {
-      return "tail";
+      return TAIL;
     } else if (arrList.length === 1) {
       return "";
     } else if (deleteByIndexShow && index === arrList.length - 1) {
@@ -198,8 +200,27 @@ export const ListPage: React.FC = () => {
 
   const disabled = (value: string, loading: boolean) =>
     value === "" || loading ? true : false;
+
   const disabledDelete = (arr: TList[], loading: boolean) =>
     arr.length === 0 || loading ? true : false;
+
+  const disabledDeleteByIndex = (
+    arr: TList[],
+    loading: boolean,
+    value: string
+  ) =>
+    arr.length === 0 ||
+    loading ||
+    !value ||
+    +value < 0 ||
+    +value > arr.length - 1
+      ? true
+      : false;
+
+  const disabledByIndex = (value: string, loading: boolean, arr: TList[]) =>
+    value === "" || loading || !value || +value < 0 || +value > arr.length - 1
+      ? true
+      : false;
 
   const loadingAll =
     loading.loadingAddHead ||
@@ -259,6 +280,7 @@ export const ListPage: React.FC = () => {
         <div className={styles.box}>
           <Input
             placeholder="Введите индекс"
+            type="number"
             extraClass={styles.inputList}
             value={valueIndex}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -271,7 +293,11 @@ export const ListPage: React.FC = () => {
             onClick={addByIndex}
             extraClass={styles.buttonIndex}
             isLoader={loading.loadingAddIndex}
-            disabled={disabled(valueIndex, loading.loadingAddIndex)}
+            disabled={disabledByIndex(
+              valueIndex,
+              loading.loadingAddIndex,
+              arrList
+            )}
           />
           <Button
             text="Удалить по индексу"
@@ -279,7 +305,11 @@ export const ListPage: React.FC = () => {
             onClick={deleteByIndex}
             extraClass={styles.buttonIndex}
             isLoader={loading.loadingDeleteIndex}
-            disabled={disabledDelete(arrList, loading.loadingDeleteIndex)}
+            disabled={disabledDeleteByIndex(
+              arrList,
+              loading.loadingDeleteIndex,
+              valueIndex
+            )}
           />
         </div>
       </div>
