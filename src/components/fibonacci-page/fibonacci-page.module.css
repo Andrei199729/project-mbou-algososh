@@ -1,0 +1,19 @@
+.form {
+  max-width: 567px;
+  display: flex;
+  margin: auto;
+  gap: 12px;
+}
+
+.box {
+  max-width: 944px;
+  margin: 48px auto 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 78px 16px;
+}
+
+.box-start {
+  justify-content: flex-start;
+}
