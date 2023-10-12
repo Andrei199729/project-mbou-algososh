@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from "./stack-page.module.css";
 import { Input } from "../ui/input/input";
@@ -8,6 +8,7 @@ import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
 import { Stack } from "./stack-page-class";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { useForm } from "../../utils/hooks/useForm";
 
 type TStack = {
   value: string;
@@ -15,9 +16,10 @@ type TStack = {
 };
 
 const stack = new Stack<TStack>();
+
 export const StackPage: React.FC = () => {
+  const { values, handleChange, setValues } = useForm({ value: "" });
   const [arrayStack, setArrayStack] = useState<TStack[]>([]);
-  const [valueStack, setValueStack] = useState<string>("");
   const [loaderPush, setLoaderPush] = useState<boolean>(false);
   const [loaderPop, setLoaderPop] = useState<boolean>(false);
   const [loaderReset, setLoaderReset] = useState<boolean>(false);
@@ -25,13 +27,13 @@ export const StackPage: React.FC = () => {
   async function onSubmitPush(e: FormEvent<HTMLFormElement>) {
     setLoaderPush(true);
     e.preventDefault();
-    if (valueStack !== "") {
-      stack.push({ value: valueStack, color: ElementStates.Changing });
+    if (values.value !== "") {
+      stack.push({ value: values.value, color: ElementStates.Changing });
       setArrayStack([...stack.getElements()]);
     }
     await setTime(SHORT_DELAY_IN_MS);
     stack.getElements()[stack.getSize() - 1].color = ElementStates.Default;
-    setValueStack("");
+    setValues({ value: "" });
     setLoaderPush(false);
   }
 
@@ -67,15 +69,14 @@ export const StackPage: React.FC = () => {
             extraClass={styles.inputSize}
             maxLength={4}
             isLimitText={true}
-            value={valueStack}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setValueStack(e.target.value)
-            }
+            value={values.value}
+            name="value"
+            onChange={handleChange}
           />
           <Button
             text="Добавить"
             type="submit"
-            disabled={valueStack === ""}
+            disabled={values.value === ""}
             isLoader={loaderPush}
           />
           <Button

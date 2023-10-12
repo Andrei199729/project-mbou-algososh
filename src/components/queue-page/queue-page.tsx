@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -9,6 +9,7 @@ import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 import { HEAD, TAIL } from "../../constants/element-captions";
+import { useForm } from "../../utils/hooks/useForm";
 
 type TQueue = {
   value?: string;
@@ -24,8 +25,9 @@ export const QueuePage: React.FC = () => {
     color: ElementStates.Default,
   }));
 
+  const { values, handleChange, setValues } = useForm({ value: "" });
+
   const [arrayQueue, setArrayQueue] = useState<TQueue[]>(queueArray);
-  const [valueQueue, setValueQueue] = useState<string>("");
   const [loaderEnqueue, setLoaderEnqueue] = useState<boolean>(false);
   const [loaderDequeue, setLoaderDequeue] = useState<boolean>(false);
   const [loaderReset, setLoaderReset] = useState<boolean>(false);
@@ -34,19 +36,19 @@ export const QueuePage: React.FC = () => {
   async function onSubmitEnqueue(e: FormEvent<HTMLFormElement>) {
     setLoaderEnqueue(true);
     e.preventDefault();
-    if (valueQueue !== "") {
-      setValueQueue("");
-      queue.enqueue({ value: valueQueue, color: ElementStates.Default });
+    if (values.value !== "") {
+      setValues({ value: "" });
+      queue.enqueue({ value: values.value, color: ElementStates.Default });
       arrayQueue[queue.tail - 1] = { value: "", color: ElementStates.Changing };
       setArrayQueue([...arrayQueue]);
       await setTime(SHORT_DELAY_IN_MS);
       arrayQueue[queue.tail - 1] = {
-        value: valueQueue,
+        value: values.value,
         color: ElementStates.Changing,
       };
       setArrayQueue([...arrayQueue]);
       arrayQueue[queue.tail - 1] = {
-        value: valueQueue,
+        value: values.value,
         color: ElementStates.Default,
       };
       setArrayQueue([...arrayQueue]);
@@ -115,15 +117,14 @@ export const QueuePage: React.FC = () => {
             extraClass={styles.inputSize}
             maxLength={4}
             isLimitText={true}
-            value={valueQueue}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setValueQueue(e.target.value)
-            }
+            value={values.value}
+            name="value"
+            onChange={handleChange}
           />
           <Button
             text="Добавить"
             type="submit"
-            disabled={valueQueue === "" || disabled}
+            disabled={values.value === "" || disabled}
             isLoader={loaderEnqueue}
           />
           <Button

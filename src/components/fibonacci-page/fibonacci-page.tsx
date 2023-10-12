@@ -6,9 +6,10 @@ import { Input } from "../ui/input/input";
 import styles from "./fibonacci-page.module.css";
 import { setTime } from "../../utils/setTime";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { useForm } from "../../utils/hooks/useForm";
 
 export const FibonacciPage: React.FC = () => {
-  const [fibonacciValue, setFibonacciValue] = useState<string>("");
+  const { values, handleChange, setValues } = useForm({ value: "" });
   const [loader, setLoader] = useState<boolean>(false);
   const [fibonacciValueNumberArray, setFibonacciValueNumberArray] = useState<
     number[]
@@ -17,11 +18,12 @@ export const FibonacciPage: React.FC = () => {
   async function onSubmitExpand(e: FormEvent<HTMLFormElement>) {
     setLoader(true);
     e.preventDefault();
-    const arr = fibonacci(Number(fibonacciValue));
+    const arr = fibonacci(Number(values.value));
     for (let i = 0; i < arr.length; i++) {
       await setTime(SHORT_DELAY_IN_MS);
       setFibonacciValueNumberArray(arr.slice(0, i + 1));
     }
+    setValues({ value: "" });
     setLoader(false);
   }
 
@@ -43,16 +45,17 @@ export const FibonacciPage: React.FC = () => {
           type="number"
           max={19}
           isLimitText={true}
-          value={fibonacciValue}
+          value={values.value}
+          name="value"
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            e.target.value.length <= 19 && setFibonacciValue(e.target.value)
+            e.target.value.length <= 19 && handleChange(e)
           }
         />
         <Button
           type="submit"
           text="Развернуть"
           isLoader={loader}
-          disabled={fibonacciValue === ""}
+          disabled={values.value === ""}
         />
       </form>
       <div

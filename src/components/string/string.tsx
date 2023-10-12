@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -7,6 +7,7 @@ import { Circle } from "../ui/circle/circle";
 import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
 import { DELAY_IN_MS } from "../../constants/delays";
+import { useForm } from "../../utils/hooks/useForm";
 
 type TString = {
   colorElementStates: ElementStates;
@@ -14,7 +15,8 @@ type TString = {
 };
 
 export const StringComponent: React.FC = () => {
-  const [stringValue, setStringValue] = useState("");
+  const { values, handleChange } = useForm({ value: "" });
+
   const [stringValueArray, setStringValueArray] = useState<Array<TString>>([]);
   const [loader, setLoader] = useState<boolean>(false);
 
@@ -27,7 +29,7 @@ export const StringComponent: React.FC = () => {
 
   function onSubmitExpand(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    let stringArray = stringValue.split("").map((letter) => {
+    let stringArray = values.value.split("").map((letter: string) => {
       return { colorElementStates: ElementStates.Default, value: letter };
     });
 
@@ -59,17 +61,16 @@ export const StringComponent: React.FC = () => {
           type="text"
           maxLength={11}
           isLimitText={true}
-          value={stringValue}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setStringValue(e.target.value)
-          }
+          name="value"
+          value={values.value}
+          onChange={handleChange}
         />
         <Button
           type="submit"
           text="Развернуть"
           extraClass={styles.buttonString}
           isLoader={loader}
-          disabled={stringValue === ""}
+          disabled={values.value === ""}
         />
       </form>
       <div className={styles.box}>

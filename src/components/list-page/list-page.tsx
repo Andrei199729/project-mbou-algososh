@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -10,6 +10,7 @@ import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 import { HEAD, TAIL } from "../../constants/element-captions";
+import { useForm } from "../../utils/hooks/useForm";
 
 const list = new LinkedList<string>(["0", "34", "8", "1"]);
 
@@ -19,8 +20,7 @@ type TList = {
 };
 
 export const ListPage: React.FC = () => {
-  const [valueMeaning, setValueMeaning] = useState<string>("");
-  const [valueIndex, setValueIndex] = useState<string>("");
+  const { values, handleChange, setValues } = useForm({ value: "", index: "" });
   const [arrList, setArrList] = useState<TList[]>([...list.getColorArray()]);
   const [addToHeadShow, setAddToHeadShow] = useState<boolean>(false);
   const [addToTailShow, setAddToTailShow] = useState<boolean>(false);
@@ -47,12 +47,12 @@ export const ListPage: React.FC = () => {
   }, []);
 
   async function addMeaningHead() {
-    if (valueMeaning !== "" && list.getSize < 6) {
+    if (values.value !== "" && list.getSize < 6) {
       setLoading({ ...loading, loadingAddHead: true });
       setvalueInd(0);
       setAddToHeadShow(true);
       await setTime(SHORT_DELAY_IN_MS);
-      list.prepend(valueMeaning);
+      list.prepend(values.value);
       setAddToHeadShow(false);
       const newArr = list.getColorArray();
       newArr[0].color = ElementStates.Modified;
@@ -62,16 +62,16 @@ export const ListPage: React.FC = () => {
       setArrList(newArr);
     }
     setLoading({ ...loading, loadingAddHead: false });
-    setValueMeaning("");
+    setValues({ value: "" });
   }
 
   async function addMeaningTail() {
-    if (valueMeaning && list.getSize < 6) {
+    if (values.value && list.getSize < 6) {
       setLoading({ ...loading, loadingAddTail: true });
       setvalueInd(list.getSize - 1);
       setAddToTailShow(true);
       await setTime(SHORT_DELAY_IN_MS);
-      list.append(valueMeaning);
+      list.append(values.value);
       setAddToTailShow(false);
       const newArr = list.getColorArray();
       newArr[newArr.length - 1].color = ElementStates.Modified;
@@ -81,7 +81,7 @@ export const ListPage: React.FC = () => {
       setArrList(newArr);
     }
     setLoading({ ...loading, loadingAddTail: false });
-    setValueMeaning("");
+    setValues({ value: "" });
   }
 
   async function deleteMeaningHead() {
@@ -119,7 +119,7 @@ export const ListPage: React.FC = () => {
   }
 
   async function addByIndex() {
-    const ind = Number(valueIndex);
+    const ind = Number(values.index);
     if (ind < 6 && list.getSize < 6) {
       setLoading({ ...loading, loadingAddIndex: true });
       setAddByIndexShow(true);
@@ -134,7 +134,7 @@ export const ListPage: React.FC = () => {
       }
       setAddByIndexShow(false);
       setvalueInd(Number(""));
-      list.insertAt(valueMeaning, ind);
+      list.insertAt(values.value, ind);
       const finalArr = list.getColorArray();
       finalArr[ind].color = ElementStates.Modified;
       setArrList(finalArr);
@@ -143,12 +143,11 @@ export const ListPage: React.FC = () => {
       setArrList(finalArr);
     }
     setLoading({ ...loading, loadingAddIndex: false });
-    setValueIndex("");
-    setValueMeaning("");
+    setValues({ value: "", index: "" });
   }
 
   async function deleteByIndex() {
-    const ind = Number(valueIndex);
+    const ind = Number(values.index);
     if (ind < list.getSize && ind < 7) {
       setLoading({ ...loading, loadingDeleteIndex: true });
       const newArr = list.getColorArray();
@@ -169,7 +168,7 @@ export const ListPage: React.FC = () => {
       setDeleteByIndexShow(false);
     }
     setLoading({ ...loading, loadingDeleteIndex: false });
-    setValueIndex("");
+    setValues({ value: "", index: "" });
   }
 
   const showHead = (index: number) => {
@@ -198,7 +197,7 @@ export const ListPage: React.FC = () => {
     }
   };
 
-  const disabled = (value: string, loading: boolean) =>
+  const disabled = (value: string | undefined, loading: boolean) =>
     value === "" || loading ? true : false;
 
   const disabledDelete = (arr: TList[], loading: boolean) =>
@@ -207,7 +206,7 @@ export const ListPage: React.FC = () => {
   const disabledDeleteByIndex = (
     arr: TList[],
     loading: boolean,
-    value: string
+    value: string | undefined
   ) =>
     arr.length === 0 ||
     loading ||
@@ -217,7 +216,11 @@ export const ListPage: React.FC = () => {
       ? true
       : false;
 
-  const disabledByIndex = (value: string, loading: boolean, arr: TList[]) =>
+  const disabledByIndex = (
+    value: string | undefined,
+    loading: boolean,
+    arr: TList[]
+  ) =>
     value === "" || loading || !value || +value < 0 || +value > arr.length - 1
       ? true
       : false;
@@ -239,10 +242,9 @@ export const ListPage: React.FC = () => {
             isLimitText={true}
             maxLength={4}
             extraClass={styles.inputList}
-            value={valueMeaning}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setValueMeaning(e.target.value)
-            }
+            value={values.value || ""}
+            name="value"
+            onChange={handleChange}
           />
           <Button
             text="Добавить в head"
@@ -250,7 +252,7 @@ export const ListPage: React.FC = () => {
             extraClass={styles.buttonSymbol}
             onClick={addMeaningHead}
             isLoader={loading.loadingAddHead}
-            disabled={disabled(valueMeaning, loading.loadingAddHead)}
+            disabled={disabled(values.value, loading.loadingAddHead)}
           />
           <Button
             text="Добавить в tail"
@@ -258,7 +260,7 @@ export const ListPage: React.FC = () => {
             onClick={addMeaningTail}
             extraClass={styles.buttonSymbol}
             isLoader={loading.loadingAddTail}
-            disabled={disabled(valueMeaning, loading.loadingAddTail)}
+            disabled={disabled(values.value, loading.loadingAddTail)}
           />
           <Button
             text="Удалить из head"
@@ -282,10 +284,9 @@ export const ListPage: React.FC = () => {
             placeholder="Введите индекс"
             type="number"
             extraClass={styles.inputList}
-            value={valueIndex}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setValueIndex(e.target.value)
-            }
+            value={values.index || ""}
+            name="index"
+            onChange={handleChange}
           />
           <Button
             text="Добавить по индексу"
@@ -294,7 +295,7 @@ export const ListPage: React.FC = () => {
             extraClass={styles.buttonIndex}
             isLoader={loading.loadingAddIndex}
             disabled={disabledByIndex(
-              valueIndex,
+              values.index,
               loading.loadingAddIndex,
               arrList
             )}
@@ -308,7 +309,7 @@ export const ListPage: React.FC = () => {
             disabled={disabledDeleteByIndex(
               arrList,
               loading.loadingDeleteIndex,
-              valueIndex
+              values.index
             )}
           />
         </div>
@@ -326,7 +327,7 @@ export const ListPage: React.FC = () => {
                     <div data-testid="topCircle" className={styles.topCircle}>
                       <Circle
                         isSmall
-                        letter={valueMeaning}
+                        letter={values.value}
                         state={ElementStates.Changing}
                       />
                     </div>
