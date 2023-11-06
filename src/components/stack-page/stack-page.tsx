@@ -78,6 +78,7 @@ export const StackPage: React.FC = () => {
             type="submit"
             disabled={values.value === ""}
             isLoader={loaderPush}
+            data-cy="add"
           />
           <Button
             text="Удалить"
@@ -85,6 +86,7 @@ export const StackPage: React.FC = () => {
             onClick={onClickPop}
             disabled={!arrayStack.length}
             isLoader={loaderPop}
+            data-cy="del"
           />
         </div>
 
@@ -93,6 +95,7 @@ export const StackPage: React.FC = () => {
           type="reset"
           disabled={!arrayStack.length}
           isLoader={loaderReset}
+          data-cy="reset"
         />
       </form>
       <div className={styles.stack}>

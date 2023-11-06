@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, {
+  ChangeEvent,
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { RadioInput } from "../ui/radio-input/radio-input";
 import { Button } from "../ui/button/button";
@@ -9,10 +15,127 @@ import { ElementStates } from "../../types/element-states";
 import { setTime } from "../../utils/setTime";
 import { DELAY_IN_MS } from "../../constants/delays";
 
-type TArraySort = {
+export type TArraySort = {
   value: number;
   color: ElementStates;
 };
+
+export async function choiceSortAscending(
+  arr: TArraySort[],
+  setLoaderAscending: Dispatch<SetStateAction<boolean>>,
+  setArrayRandom: Dispatch<SetStateAction<TArraySort[]>>
+) {
+  setLoaderAscending(true);
+  if (arr.length > 1) {
+    for (let i = 0; i < arr.length - 1; i++) {
+      let indexMin = i;
+      for (let j = i + 1; j < arr.length; j++) {
+        arr[i].color = ElementStates.Changing;
+        arr[j].color = ElementStates.Changing;
+        setArrayRandom([...arr]);
+        await setTime(DELAY_IN_MS);
+        if (arr[indexMin].value > arr[j].value) {
+          indexMin = j;
+        }
+        arr[j].color = ElementStates.Default;
+        setArrayRandom([...arr]);
+      }
+      [arr[i].value, arr[indexMin].value] = [arr[indexMin].value, arr[i].value];
+      arr[i].color = ElementStates.Modified;
+      setArrayRandom([...arr]);
+    }
+    arr[arr.length - 1].color = ElementStates.Modified;
+    setArrayRandom([...arr]);
+  }
+  setLoaderAscending(false);
+}
+
+export async function choiceSortDescending(
+  arr: TArraySort[],
+  setLoaderDescending: Dispatch<SetStateAction<boolean>>,
+  setArrayRandom: Dispatch<SetStateAction<TArraySort[]>>
+) {
+  setLoaderDescending(true);
+  if (arr.length > 1) {
+    for (let i = 0; i < arr.length - 1; i++) {
+      let indexMin = i;
+      for (let j = i + 1; j < arr.length; j++) {
+        arr[i].color = ElementStates.Changing;
+        arr[j].color = ElementStates.Changing;
+        setArrayRandom([...arr]);
+        await setTime(DELAY_IN_MS);
+        if (arr[indexMin].value < arr[j].value) {
+          indexMin = j;
+        }
+        arr[j].color = ElementStates.Default;
+        setArrayRandom([...arr]);
+      }
+      [arr[i].value, arr[indexMin].value] = [arr[indexMin].value, arr[i].value];
+      arr[i].color = ElementStates.Modified;
+    }
+    arr[arr.length - 1].color = ElementStates.Modified;
+    setArrayRandom([...arr]);
+  }
+  setLoaderDescending(false);
+}
+
+export async function bubbleSortAscending(
+  arr: TArraySort[],
+  setLoaderAscending: Dispatch<SetStateAction<boolean>>,
+  setArrayRandom: Dispatch<SetStateAction<TArraySort[]>>
+) {
+  setLoaderAscending(true);
+  if (arr.length > 1) {
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr.length - 1 - i; j++) {
+        arr[j].color = ElementStates.Changing;
+        arr[j + 1].color = ElementStates.Changing;
+        setArrayRandom([...arr]);
+        await setTime(DELAY_IN_MS);
+        if (arr[j].value > arr[j + 1].value) {
+          let tmp = arr[j].value;
+          arr[j].value = arr[j + 1].value;
+          arr[j + 1].value = tmp;
+          arr[j + 1].color = ElementStates.Modified;
+        }
+        arr[j].color = ElementStates.Default;
+        setArrayRandom([...arr]);
+      }
+      setArrayRandom(arr);
+      arr[arr.length - i - 1].color = ElementStates.Modified;
+    }
+  }
+  setLoaderAscending(false);
+}
+
+export async function bubbleSortDescending(
+  arr: TArraySort[],
+  setLoaderDescending: Dispatch<SetStateAction<boolean>>,
+  setArrayRandom: Dispatch<SetStateAction<TArraySort[]>>
+) {
+  setLoaderDescending(true);
+  if (arr.length > 1) {
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr.length - 1 - i; j++) {
+        arr[j].color = ElementStates.Changing;
+        arr[j + 1].color = ElementStates.Changing;
+        setArrayRandom([...arr]);
+        await setTime(DELAY_IN_MS);
+        if (arr[j].value < arr[j + 1].value) {
+          let tmp = arr[j].value;
+          arr[j].value = arr[j + 1].value;
+          arr[j + 1].value = tmp;
+          arr[j + 1].color = ElementStates.Modified;
+        }
+        arr[j].color = ElementStates.Default;
+        setArrayRandom([...arr]);
+      }
+      arr[arr.length - 1 - i].color = ElementStates.Modified;
+      setArrayRandom(arr);
+    }
+  }
+  setLoaderDescending(false);
+}
 
 export const SortingPage: React.FC = () => {
   const [arrayRandom, setArrayRandom] = useState<TArraySort[]>([]);
@@ -39,98 +162,98 @@ export const SortingPage: React.FC = () => {
     setArrayRandom(array);
   }
 
-  async function choiceSortAscending(arr: TArraySort[]) {
-    setLoaderAscending(true);
-    for (let i = 0; i < arr.length - 1; i++) {
-      let indexMin = i;
-      for (let j = i + 1; j < arr.length; j++) {
-        arr[i].color = ElementStates.Changing;
-        arr[j].color = ElementStates.Changing;
-        setArrayRandom([...arr]);
-        await setTime(DELAY_IN_MS);
-        if (arr[indexMin].value > arr[j].value) {
-          indexMin = j;
-        }
-        arr[j].color = ElementStates.Default;
-        setArrayRandom([...arr]);
-      }
-      [arr[i].value, arr[indexMin].value] = [arr[indexMin].value, arr[i].value];
-      arr[i].color = ElementStates.Modified;
-    }
-    arr[arr.length - 1].color = ElementStates.Modified;
-    setArrayRandom([...arr]);
-    setLoaderAscending(false);
-  }
+  // async function choiceSortAscending(arr: TArraySort[]) {
+  //   setLoaderAscending(true);
+  //   for (let i = 0; i < arr.length - 1; i++) {
+  //     let indexMin = i;
+  //     for (let j = i + 1; j < arr.length; j++) {
+  //       arr[i].color = ElementStates.Changing;
+  //       arr[j].color = ElementStates.Changing;
+  //       setArrayRandom([...arr]);
+  //       await setTime(DELAY_IN_MS);
+  //       if (arr[indexMin].value > arr[j].value) {
+  //         indexMin = j;
+  //       }
+  //       arr[j].color = ElementStates.Default;
+  //       setArrayRandom([...arr]);
+  //     }
+  //     [arr[i].value, arr[indexMin].value] = [arr[indexMin].value, arr[i].value];
+  //     arr[i].color = ElementStates.Modified;
+  //   }
+  //   arr[arr.length - 1].color = ElementStates.Modified;
+  //   setArrayRandom([...arr]);
+  //   setLoaderAscending(false);
+  // }
 
-  async function choiceSortDescending(arr: TArraySort[]) {
-    setLoaderDescending(true);
+  // async function choiceSortDescending(arr: TArraySort[]) {
+  //   setLoaderDescending(true);
 
-    for (let i = 0; i < arr.length - 1; i++) {
-      let indexMin = i;
-      for (let j = i + 1; j < arr.length; j++) {
-        arr[i].color = ElementStates.Changing;
-        arr[j].color = ElementStates.Changing;
-        setArrayRandom([...arr]);
-        await setTime(DELAY_IN_MS);
-        if (arr[indexMin].value < arr[j].value) {
-          indexMin = j;
-        }
-        arr[j].color = ElementStates.Default;
-        setArrayRandom([...arr]);
-      }
-      [arr[i].value, arr[indexMin].value] = [arr[indexMin].value, arr[i].value];
-      arr[i].color = ElementStates.Modified;
-    }
-    arr[arr.length - 1].color = ElementStates.Modified;
-    setArrayRandom([...arr]);
-    setLoaderDescending(false);
-  }
+  //   for (let i = 0; i < arr.length - 1; i++) {
+  //     let indexMin = i;
+  //     for (let j = i + 1; j < arr.length; j++) {
+  //       arr[i].color = ElementStates.Changing;
+  //       arr[j].color = ElementStates.Changing;
+  //       setArrayRandom([...arr]);
+  //       await setTime(DELAY_IN_MS);
+  //       if (arr[indexMin].value < arr[j].value) {
+  //         indexMin = j;
+  //       }
+  //       arr[j].color = ElementStates.Default;
+  //       setArrayRandom([...arr]);
+  //     }
+  //     [arr[i].value, arr[indexMin].value] = [arr[indexMin].value, arr[i].value];
+  //     arr[i].color = ElementStates.Modified;
+  //   }
+  //   arr[arr.length - 1].color = ElementStates.Modified;
+  //   setArrayRandom([...arr]);
+  //   setLoaderDescending(false);
+  // }
 
-  async function bubbleSortAscending(arr: TArraySort[]) {
-    setLoaderAscending(true);
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr.length - 1 - i; j++) {
-        arr[j].color = ElementStates.Changing;
-        arr[j + 1].color = ElementStates.Changing;
-        setArrayRandom([...arr]);
-        await setTime(DELAY_IN_MS);
-        if (arr[j].value > arr[j + 1].value) {
-          let tmp = arr[j].value;
-          arr[j].value = arr[j + 1].value;
-          arr[j + 1].value = tmp;
-          arr[j + 1].color = ElementStates.Modified;
-        }
-        arr[j].color = ElementStates.Default;
-        setArrayRandom([...arr]);
-      }
-      setArrayRandom(arr);
-      arr[arr.length - i - 1].color = ElementStates.Modified;
-    }
-    setLoaderAscending(false);
-  }
+  // async function bubbleSortAscending(arr: TArraySort[]) {
+  //   setLoaderAscending(true);
+  //   for (let i = 0; i < arr.length; i++) {
+  //     for (let j = 0; j < arr.length - 1 - i; j++) {
+  //       arr[j].color = ElementStates.Changing;
+  //       arr[j + 1].color = ElementStates.Changing;
+  //       setArrayRandom([...arr]);
+  //       await setTime(DELAY_IN_MS);
+  //       if (arr[j].value > arr[j + 1].value) {
+  //         let tmp = arr[j].value;
+  //         arr[j].value = arr[j + 1].value;
+  //         arr[j + 1].value = tmp;
+  //         arr[j + 1].color = ElementStates.Modified;
+  //       }
+  //       arr[j].color = ElementStates.Default;
+  //       setArrayRandom([...arr]);
+  //     }
+  //     setArrayRandom(arr);
+  //     arr[arr.length - i - 1].color = ElementStates.Modified;
+  //   }
+  //   setLoaderAscending(false);
+  // }
 
-  async function bubbleSortDescending(arr: TArraySort[]) {
-    setLoaderDescending(true);
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr.length - 1 - i; j++) {
-        arr[j].color = ElementStates.Changing;
-        arr[j + 1].color = ElementStates.Changing;
-        setArrayRandom([...arr]);
-        await setTime(DELAY_IN_MS);
-        if (arr[j].value < arr[j + 1].value) {
-          let tmp = arr[j].value;
-          arr[j].value = arr[j + 1].value;
-          arr[j + 1].value = tmp;
-          arr[j + 1].color = ElementStates.Modified;
-        }
-        arr[j].color = ElementStates.Default;
-        setArrayRandom([...arr]);
-      }
-      arr[arr.length - 1 - i].color = ElementStates.Modified;
-      setArrayRandom(arr);
-    }
-    setLoaderDescending(false);
-  }
+  // async function bubbleSortDescending(arr: TArraySort[]) {
+  //   setLoaderDescending(true);
+  //   for (let i = 0; i < arr.length; i++) {
+  //     for (let j = 0; j < arr.length - 1 - i; j++) {
+  //       arr[j].color = ElementStates.Changing;
+  //       arr[j + 1].color = ElementStates.Changing;
+  //       setArrayRandom([...arr]);
+  //       await setTime(DELAY_IN_MS);
+  //       if (arr[j].value < arr[j + 1].value) {
+  //         let tmp = arr[j].value;
+  //         arr[j].value = arr[j + 1].value;
+  //         arr[j + 1].value = tmp;
+  //         arr[j + 1].color = ElementStates.Modified;
+  //       }
+  //       arr[j].color = ElementStates.Default;
+  //       setArrayRandom([...arr]);
+  //     }
+  //     arr[arr.length - 1 - i].color = ElementStates.Modified;
+  //     setArrayRandom(arr);
+  //   }
+  //   setLoaderDescending(false);
+  // }
 
   function onChangeRadio(e: ChangeEvent<HTMLInputElement>) {
     setCheckSort(e.target.value);
@@ -139,25 +262,41 @@ export const SortingPage: React.FC = () => {
   async function onClickHandler(sorting: Direction) {
     if (checkSort === "выбор" && sorting === Direction.Ascending) {
       setDisabled(true);
-      await choiceSortAscending(arrayRandom);
+      await choiceSortAscending(
+        arrayRandom,
+        setLoaderAscending,
+        setArrayRandom
+      );
       setDisabled(false);
     }
 
     if (checkSort === "выбор" && sorting === Direction.Descending) {
       setDisabled(true);
-      await choiceSortDescending(arrayRandom);
+      await choiceSortDescending(
+        arrayRandom,
+        setLoaderDescending,
+        setArrayRandom
+      );
       setDisabled(false);
     }
 
     if (checkSort === "пузырёк" && sorting === Direction.Ascending) {
       setDisabled(true);
-      await bubbleSortAscending(arrayRandom);
+      await bubbleSortAscending(
+        arrayRandom,
+        setLoaderAscending,
+        setArrayRandom
+      );
       setDisabled(false);
     }
 
     if (checkSort === "пузырёк" && sorting === Direction.Descending) {
       setDisabled(true);
-      await bubbleSortDescending(arrayRandom);
+      await bubbleSortDescending(
+        arrayRandom,
+        setLoaderDescending,
+        setArrayRandom
+      );
       setDisabled(false);
     }
   }

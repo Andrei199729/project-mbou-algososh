@@ -70,7 +70,7 @@ export const QueuePage: React.FC = () => {
     };
 
     setArrayQueue([...arrayQueue]);
-
+    await setTime(SHORT_DELAY_IN_MS);
     arrayQueue[queue.head - 1] = {
       value: "",
       color: ElementStates.Default,
@@ -126,6 +126,7 @@ export const QueuePage: React.FC = () => {
             type="submit"
             disabled={values.value === "" || disabled}
             isLoader={loaderEnqueue}
+            data-cy="add"
           />
           <Button
             text="Удалить"
@@ -133,9 +134,15 @@ export const QueuePage: React.FC = () => {
             onClick={onClickDequeue}
             disabled={queue.isEmpty()}
             isLoader={loaderDequeue}
+            data-cy="del"
           />
         </div>
-        <Button text="Очистить" type="reset" isLoader={loaderReset} />
+        <Button
+          text="Очистить"
+          type="reset"
+          isLoader={loaderReset}
+          data-cy="reset"
+        />
       </form>
       <div className={styles.stack}>
         {arrayQueue.slice(0, 7).map((item, index) => {

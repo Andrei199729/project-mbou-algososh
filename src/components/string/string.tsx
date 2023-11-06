@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
@@ -9,9 +9,42 @@ import { setTime } from "../../utils/setTime";
 import { DELAY_IN_MS } from "../../constants/delays";
 import { useForm } from "../../utils/hooks/useForm";
 
-type TString = {
+export type TString = {
   colorElementStates: ElementStates;
   value: string;
+};
+
+export const swap = (
+  arr: TString[],
+  firstIndex: number,
+  secondIndex: number
+) => {
+  const temp = arr[firstIndex];
+  arr[firstIndex] = arr[secondIndex];
+  arr[secondIndex] = temp;
+  return arr;
+};
+
+export const reverseString = async function reverseString(
+  str: TString[],
+  setLoader: Dispatch<SetStateAction<boolean>>,
+  setStringValueArray: Dispatch<SetStateAction<TString[]>>
+) {
+  setLoader(true);
+  for (let i = str.length - 1; i >= (str.length - 1) / 2; i--) {
+    let b = str.length - 1 - i;
+    if (i !== b) {
+      str[i].colorElementStates = ElementStates.Changing;
+      str[b].colorElementStates = ElementStates.Changing;
+      setStringValueArray([...str]);
+      await setTime(DELAY_IN_MS);
+    }
+    swap(str, i, b);
+    str[i].colorElementStates = ElementStates.Modified;
+    str[b].colorElementStates = ElementStates.Modified;
+    setStringValueArray([...str]);
+  }
+  setLoader(false);
 };
 
 export const StringComponent: React.FC = () => {
@@ -20,38 +53,13 @@ export const StringComponent: React.FC = () => {
   const [stringValueArray, setStringValueArray] = useState<Array<TString>>([]);
   const [loader, setLoader] = useState<boolean>(false);
 
-  const swap = (arr: TString[], firstIndex: number, secondIndex: number) => {
-    const temp = arr[firstIndex];
-    arr[firstIndex] = arr[secondIndex];
-    arr[secondIndex] = temp;
-    return arr;
-  };
-
   function onSubmitExpand(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     let stringArray = values.value.split("").map((letter: string) => {
       return { colorElementStates: ElementStates.Default, value: letter };
     });
 
-    reverseString(stringArray);
-  }
-
-  async function reverseString(str: TString[]) {
-    setLoader(true);
-    for (let i = str.length - 1; i >= (str.length - 1) / 2; i--) {
-      let b = str.length - 1 - i;
-      if (i !== b) {
-        str[i].colorElementStates = ElementStates.Changing;
-        str[b].colorElementStates = ElementStates.Changing;
-        setStringValueArray([...str]);
-        await setTime(DELAY_IN_MS);
-      }
-      swap(str, i, b);
-      str[i].colorElementStates = ElementStates.Modified;
-      str[b].colorElementStates = ElementStates.Modified;
-      setStringValueArray([...str]);
-    }
-    setLoader(false);
+    reverseString(stringArray, setLoader, setStringValueArray);
   }
 
   return (
