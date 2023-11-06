@@ -7,6 +7,7 @@ interface Props {
 export const ArrowIcon: React.FC<Props> = ({ fill = "#0032FF" }) => {
   return (
     <svg
+      data-cy="arrow"
       width="24"
       height="24"
       viewBox="0 0 24 24"

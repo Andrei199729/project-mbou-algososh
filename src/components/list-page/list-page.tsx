@@ -11,7 +11,6 @@ import { setTime } from "../../utils/setTime";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 import { HEAD, TAIL } from "../../constants/element-captions";
 import { useForm } from "../../utils/hooks/useForm";
-
 const list = new LinkedList<string>(["0", "34", "8", "1"]);
 
 type TList = {
@@ -245,6 +244,7 @@ export const ListPage: React.FC = () => {
             value={values.value || ""}
             name="value"
             onChange={handleChange}
+            data-test-cy="input"
           />
           <Button
             text="Добавить в head"
@@ -253,6 +253,7 @@ export const ListPage: React.FC = () => {
             onClick={addMeaningHead}
             isLoader={loading.loadingAddHead}
             disabled={disabled(values.value, loading.loadingAddHead)}
+            data-cy="addHead"
           />
           <Button
             text="Добавить в tail"
@@ -261,6 +262,7 @@ export const ListPage: React.FC = () => {
             extraClass={styles.buttonSymbol}
             isLoader={loading.loadingAddTail}
             disabled={disabled(values.value, loading.loadingAddTail)}
+            data-cy="addTail"
           />
           <Button
             text="Удалить из head"
@@ -269,6 +271,7 @@ export const ListPage: React.FC = () => {
             extraClass={styles.buttonSymbol}
             isLoader={loading.loadingDeleteHead}
             disabled={disabledDelete(arrList, loading.loadingDeleteHead)}
+            data-cy="delHead"
           />
           <Button
             text="Удалить из tail"
@@ -277,6 +280,7 @@ export const ListPage: React.FC = () => {
             extraClass={styles.buttonSymbol}
             isLoader={loading.loadingDeleteTail}
             disabled={disabledDelete(arrList, loading.loadingDeleteTail)}
+            data-cy="delTail"
           />
         </div>
         <div className={styles.box}>
@@ -287,6 +291,7 @@ export const ListPage: React.FC = () => {
             value={values.index || ""}
             name="index"
             onChange={handleChange}
+            data-test-cy="inputIndex"
           />
           <Button
             text="Добавить по индексу"
@@ -299,6 +304,7 @@ export const ListPage: React.FC = () => {
               loading.loadingAddIndex,
               arrList
             )}
+            data-cy="addByIndex"
           />
           <Button
             text="Удалить по индексу"
@@ -311,10 +317,11 @@ export const ListPage: React.FC = () => {
               loading.loadingDeleteIndex,
               values.index
             )}
+            data-cy="delByIndex"
           />
         </div>
       </div>
-      <div className={styles.boxCircle}>
+      <div className={styles.boxCircle} data-cy="list">
         {arrList.map((item, index) => {
           return (
             <div key={index} className={styles.stack}>
@@ -324,7 +331,7 @@ export const ListPage: React.FC = () => {
                     addToTailShow === true ||
                     addByIndexShow === true) &&
                   index === valueInd && (
-                    <div data-testid="topCircle" className={styles.topCircle}>
+                    <div data-cy="topCircle" className={styles.topCircle}>
                       <Circle
                         isSmall
                         letter={values.value}
@@ -345,7 +352,7 @@ export const ListPage: React.FC = () => {
                     deleteFromTheTailShow === true ||
                     deleteByIndexShow === true) &&
                   index === valueInd && (
-                    <div className={styles.bottomCircel}>
+                    <div data-cy="bottomCircel" className={styles.bottomCircel}>
                       <Circle
                         isSmall
                         letter={circleValue}
